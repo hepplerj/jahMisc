@@ -1,0 +1,2 @@
+### version-check
+version.used <- paste(version$major,".",version$minor,sep="")
