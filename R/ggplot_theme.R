@@ -24,13 +24,14 @@ load_fonts <- function() {
 #' @import ggplot2
 #' @export
 theme_jah <- function(
-  base_family        = "Source Sans Pro Light",
-  plot_title_family  = "Source Sans Pro",
+  base_family        = "Lato",
   plot_title_face    = "bold",
   striptext_family   = plot_title_family,
   striptext_face     = plot_title_face,
   strip_inverse      = FALSE,
-  base_size          = 11
+  base_size          = 12L,
+  base_line_size     = base_size / 24L,
+  base_rect_size     = base_size / 24L
 ) {
 
   # init
