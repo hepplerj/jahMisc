@@ -35,6 +35,20 @@ transform_xy <- function(sp_object) {
   sp_xy
 }
 
+#' Readfile
+readfile <- function(filename) {
+  read_lines(filename) %>%
+    tibble(text = .) %>%
+    filter(text != "") %>%
+    mutate(paragraph = 1:n()) %>%
+    unnest_tokens(word, text) %>%
+    mutate(filename = filename %>%
+             str_replace(".*/", "") %>%
+             str_replace(".txt", ""))
+}
+
+
+
 
 
 #'  Create nice-looking quantile labels for Leaflet mapping.
@@ -56,6 +70,16 @@ quantile_labels <- function(vec, n) {
   }
   final_labs <- c(qlabs, "Data unavailable")
   final_labs
+}
+
+#' Removes tick marks from all axes
+#'
+#' @md
+#' @export
+remove_ticks <- function() {
+  ggplot2::theme(axis.ticks = ggplot2::element_blank(),
+                 axis.ticks.x = ggplot2::element_blank(),
+                 axis.ticks.y = ggplot2::element_blank())
 }
 
 #' Minimal ggplot2 theme using the Roboto Condensed and Roboto Bold fonts
