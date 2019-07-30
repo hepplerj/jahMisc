@@ -114,3 +114,7 @@ theme_roboto <- function(base_size = 11, ...) {
   )
   ret
 }
+
+rotate_x_axis <- function() {
+  ggplot2::theme(axis.text.x=element_text(angle =- 90, vjust = 0.5))
+}
