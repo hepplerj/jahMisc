@@ -1,15 +1,40 @@
+#' @importFrom magrittr %>%
+#' @export
+magrittr::`%>%`
+
+#' @importFrom magrittr %>%
+#' @export
+magrittr::`%>%`
+
+##' Convenience 'not-in' operator
+##'
+##' Complement of the built-in operator \code{\%in\%}. Returns the elements of \code{x} that are not in \code{y}.
+##' @title \%nin\%
+##' @param x vector of items
+##' @param y vector of all values
+##' @return logical vecotor of items in x not in y
+##' @author Jason Heppler
+##' @rdname nin
+##' @examples
+##' fruit <- c("apples", "oranges", "banana")
+##' "apples" %nin% fruit
+##' "pears" %nin% fruit
+##' @export
+"%nin%" <- function(x, y) {
+  return( !(x %in% y) )
+}
+
 #'  Easily merge a data frame to a spatial data frame
 #'
 #'  The pages of StackOverflow are littered with questions about how to merge a regular data frame to a
-#'  spatial data frame in R.  The \code{merge} function from the sp package operates under a strict set of
-#'  assumptions, which if violated will break your data.  This function wraps a couple StackOverflow answers
+#'  spatial data frame in R. The \code{merge} function from the sp package operates under a strict set of
+#'  assumptions, which if violated will break your data. This function wraps a couple StackOverflow answers
 #'  I've seen that work in a friendlier syntax.
 #' @param spatial_data A spatial data frame to which you want to merge data.
 #' @param data_frame A regular data frame that you want to merge to your spatial data.
 #' @param by_sp The column name you'll use for the merge from your spatial data frame.
 #' @param by_df The column name you'll use for the merge from your regular data frame.
 #' @export
-
 geo_join <- function(spatial_data, data_frame, by_sp, by_df) {
 
   spatial_data@data <- data.frame(spatial_data@data,
@@ -17,7 +42,6 @@ geo_join <- function(spatial_data, data_frame, by_sp, by_df) {
                                                    data_frame[[by_df]]), ])
 
   spatial_data
-
 
 }
 
@@ -34,22 +58,6 @@ transform_xy <- function(sp_object) {
   sp_xy <- spTransform(sp_object, CRS("+proj=longlat +datum=WGS84"))
   sp_xy
 }
-
-#' Readfile
-readfile <- function(filename) {
-  read_lines(filename) %>%
-    tibble(text = .) %>%
-    filter(text != "") %>%
-    mutate(paragraph = 1:n()) %>%
-    unnest_tokens(word, text) %>%
-    mutate(filename = filename %>%
-             str_replace(".*/", "") %>%
-             str_replace(".txt", ""))
-}
-
-
-
-
 
 #'  Create nice-looking quantile labels for Leaflet mapping.
 #'
@@ -80,6 +88,40 @@ remove_ticks <- function() {
   ggplot2::theme(axis.ticks = ggplot2::element_blank(),
                  axis.ticks.x = ggplot2::element_blank(),
                  axis.ticks.y = ggplot2::element_blank())
+}
+
+##' Arrange ggplot2 plots in an arbitrary grid
+##'
+##' The function takes arguments of the form `list(plot, row(s),
+##'     column(s))` where `plot` is a ggplot2 plot object, and the
+##'     rows and columns identify an area of the grid that you want
+##'     that plot object to occupy. See
+##'     http://stackoverflow.com/questions/18427455/multiple-ggplots-of-different-sizes
+##' @title Arrange ggplot2 plots in an arbitrary grid
+##' @return A grid of ggplot2 plots
+##' @author Extracted from the [wq] package
+##' @param ... A series lists of of ggplot objects
+##' @examples
+##' library(ggplot2)
+##' p1 <- qplot(x=wt,y=mpg,geom="point",main="Scatterplot of wt vs.
+##'     mpg", data=mtcars)
+##' p2 <- qplot(x=wt,y=disp,geom="point",main="Scatterplot of wt vs
+##'     disp", data=mtcars)
+##' p3 <- qplot(wt,data=mtcars)
+##' lay_out(list(p1, 1:2, 1:4),
+##'       list(p2, 3:4, 1:2),
+##'       list(p3, 3:4, 3:4))
+##' @export
+lay_out = function(...) {
+  x <- list(...)
+  n <- max(sapply(x, function(x) max(x[[2]])))
+  p <- max(sapply(x, function(x) max(x[[3]])))
+  grid::pushViewport(grid::viewport(layout = grid::grid.layout(n, p)))
+
+  for (i in seq_len(length(x))) {
+    print(x[[i]][[1]], vp = grid::viewport(layout.pos.row = x[[i]][[2]],
+                                           layout.pos.col = x[[i]][[3]]))
+  }
 }
 
 #' Minimal ggplot2 theme using the Roboto Condensed and Roboto Bold fonts
@@ -115,6 +157,7 @@ theme_roboto <- function(base_size = 11, ...) {
   ret
 }
 
+#' A helper to rotate and adjust x-axis labels 90 degrees.
 rotate_x_axis <- function() {
   ggplot2::theme(axis.text.x=element_text(angle =- 90, vjust = 0.5))
 }
